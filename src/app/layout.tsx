@@ -1,8 +1,9 @@
 import { ThemeProvider } from "@vc/components/theme-provider";
+import Toaster from "@vc/components/toaster";
 import "@vc/styles/globals.css";
+import { TRPCReactProvider } from "@vc/trpc/react";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
-import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "VirtualContacts",
@@ -34,8 +35,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
-            <Toaster richColors closeButton />
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>
