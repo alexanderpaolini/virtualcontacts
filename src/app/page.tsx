@@ -1,3 +1,4 @@
+import { TestButton } from "@vc/components/test-button";
 import { api } from "@vc/trpc/server";
 
 export default async function HomePage() {
@@ -11,10 +12,11 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-5 text-white">
+    <main className="mt-[33vh] flex flex-col items-center justify-start gap-5">
       <h1 className="text-5xl font-extrabold">Hello World</h1>
       <p>{test.message}</p>
-      <p>{test2?.message}</p>
+      {test2 && <p>{test2?.message}</p>}
+      <TestButton />
     </main>
   );
 }
