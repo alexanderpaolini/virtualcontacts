@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
 import {
@@ -15,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import { api } from "@vc/trpc/react";
 import { toast } from "sonner";
+import { Skeleton } from "@vc/components/ui/skeleton";
 
 export function ProfileCard() {
   const router = useRouter();
@@ -62,16 +62,20 @@ export function ProfileCard() {
 
 export function ProfileCardSkeleton() {
   return (
-    <Card className="w-full max-w-sm animate-pulse">
-      <CardHeader>
+    <Card className="w-full max-w-sm">
+      <CardContent>
         <div className="flex flex-row items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" />
-          <div className="flex flex-1 flex-col justify-between">
-            <div className="mb-1 h-4 w-32 rounded bg-gray-200 dark:bg-gray-700" />
-            <div className="h-4 w-48 rounded bg-gray-100 dark:bg-gray-800" />
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="flex h-10 flex-1 flex-col justify-between">
+            <CardTitle>
+              <Skeleton className="h-5 w-32 rounded" />
+            </CardTitle>
+            <CardDescription>
+              <Skeleton className="h-4 w-48 rounded" />
+            </CardDescription>
           </div>
         </div>
-      </CardHeader>
+      </CardContent>
     </Card>
   );
 }
