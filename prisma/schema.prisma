@@ -41,20 +41,145 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  name               String?
+  email              String              @unique
+  emailVerified      DateTime?
+  image              String?
+  passwordHash       String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  accounts           Account[]
+  sessions           Session[]
+  emailVerifications EmailVerification[]
+  
+  cards              Card[]
+  shareRuleUsers     ShareRuleUser[]
+  accessLogs         AccessLog[]
+  connectionsFrom    Connection[]        @relation("ConnectionsFrom")
+  connectionsTo      Connection[]        @relation("ConnectionsTo")
+}
+
+model EmailVerification {
+  id         String    @id @default(cuid())
+  userId     String
+  token      String
+  email      String
+  verified   Boolean
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Card {
+  id         String         @id @default(cuid())
+  ownerId    String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  owner      User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  properties CardProperty[]
+  shareRules ShareRule[]
+}
+
+model CardProperty {
+  id                  String              @id @default(cuid())
+  cardId              String
+  type                String
+  value               String
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  card                Card                @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  parameters          PropertyParameter[]
+  shareRuleProperties ShareRuleProperty[]
+}
+
+model PropertyParameter {
+  id         String       @id @default(cuid())
+  propertyId String
+  key        String
+  value      String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  property   CardProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model ShareRule {
+  id              String              @id @default(cuid())
+  cardId          String
+  name            String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  card            Card                @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  properties      ShareRuleProperty[]
+  users           ShareRuleUser[]
+  links           ShareLink[]
+  accessLogs      AccessLog[]
+  connectionsFrom Connection[]        @relation("ConnectionFromShareRule")
+  connectionsTo   Connection[]        @relation("ConnectionToShareRule")
+}
+
+model ShareRuleProperty {
+  id          String       @id @default(cuid())
+  shareRuleId String
+  propertyId  String
+  shareRule   ShareRule    @relation(fields: [shareRuleId], references: [id], onDelete: Cascade)
+  property    CardProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model ShareRuleUser {
+  id          String    @id @default(cuid())
+  shareRuleId String
+  userId      String
+  shareRule   ShareRule @relation(fields: [shareRuleId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ShareLink {
+  id          String       @id @default(cuid())
+  shareRuleId String
+  token       String
+  maxUses     Int?
+  currentUses Int          @default(0)
+  isActive    Boolean
+  isPublic    Boolean
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+  shareRule   ShareRule    @relation(fields: [shareRuleId], references: [id], onDelete: Cascade)
+  connections Connection[]
+}
+
+model Connection {
+  id              String   @id @default(cuid())
+  fromLinkId      String
+  fromUserId      String
+  toUserId        String
+  toShareRuleId   String
+  fromShareRuleId String
+  createdAt       DateTime @default(now())
+
+  fromUser      User      @relation("ConnectionsFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser        User      @relation("ConnectionsTo", fields: [toUserId], references: [id], onDelete: Cascade)
+  fromShareRule ShareRule @relation("ConnectionFromShareRule", fields: [fromShareRuleId], references: [id], onDelete: Cascade)
+  toShareRule   ShareRule @relation("ConnectionToShareRule", fields: [toShareRuleId], references: [id], onDelete: Cascade)
+  fromLink      ShareLink @relation(fields: [fromLinkId], references: [id], onDelete: Cascade)
+}
+
+model AccessLog {
+  id          String    @id @default(cuid())
+  shareRuleId String
+  userId      String?
+  ipAddress   String
+  accessedAt  DateTime  @default(now())
+  shareRule   ShareRule @relation(fields: [shareRuleId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id])
 }
