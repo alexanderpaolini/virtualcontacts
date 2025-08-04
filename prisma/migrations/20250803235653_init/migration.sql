@@ -1,3 +1,9 @@
+-- CreateEnum
+CREATE TYPE "public"."PropertyParameterType" AS ENUM ('LANGUAGE', 'VALUE', 'PREF', 'ALTID', 'PID', 'TYPE', 'MEDIATYPE', 'CALSCALE', 'SORT_AS', 'GEO', 'TZ');
+
+-- CreateEnum
+CREATE TYPE "public"."CardPropertyType" AS ENUM ('FN', 'N', 'NICKNAME', 'PHOTO', 'BDAY', 'ANNIVERSARY', 'GENDER', 'ADR', 'TEL', 'EMAIL', 'IMPP', 'LANG', 'TZ', 'GEO', 'ORG', 'TITLE', 'ROLE', 'LOGO', 'URL', 'CATEGORIES', 'NOTE', 'RELATED', 'KEY', 'FBURL', 'CALURI', 'CALADRURI');
+
 -- CreateTable
 CREATE TABLE "public"."Account" (
     "id" TEXT NOT NULL,
@@ -76,7 +82,7 @@ CREATE TABLE "public"."Card" (
 CREATE TABLE "public"."CardProperty" (
     "id" TEXT NOT NULL,
     "cardId" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
+    "type" "public"."CardPropertyType" NOT NULL,
     "value" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -88,7 +94,7 @@ CREATE TABLE "public"."CardProperty" (
 CREATE TABLE "public"."PropertyParameter" (
     "id" TEXT NOT NULL,
     "propertyId" TEXT NOT NULL,
-    "key" TEXT NOT NULL,
+    "key" "public"."PropertyParameterType" NOT NULL,
     "value" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

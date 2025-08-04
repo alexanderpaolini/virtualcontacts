@@ -33,6 +33,50 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+enum PropertyParameterType {
+  LANGUAGE
+  VALUE
+  PREF
+  ALTID
+  PID
+  TYPE
+  MEDIATYPE
+  CALSCALE
+  SORT_AS
+  GEO
+  TZ
+}
+
+enum CardPropertyType {
+  FN
+  N
+  NICKNAME
+  PHOTO
+  BDAY
+  ANNIVERSARY
+  GENDER
+  ADR
+  TEL
+  EMAIL
+  IMPP
+  LANG
+  TZ
+  GEO
+  ORG
+  TITLE
+  ROLE
+  LOGO
+  URL
+  CATEGORIES
+  NOTE
+  RELATED
+  KEY
+  FBURL
+  CALURI
+  CALADRURI
+}
+
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -61,12 +105,12 @@ model User {
   accounts           Account[]
   sessions           Session[]
   emailVerifications EmailVerification[]
-  
-  cards              Card[]
-  shareRuleUsers     ShareRuleUser[]
-  accessLogs         AccessLog[]
-  connectionsFrom    Connection[]        @relation("ConnectionsFrom")
-  connectionsTo      Connection[]        @relation("ConnectionsTo")
+
+  cards           Card[]
+  shareRuleUsers  ShareRuleUser[]
+  accessLogs      AccessLog[]
+  connectionsFrom Connection[]    @relation("ConnectionsFrom")
+  connectionsTo   Connection[]    @relation("ConnectionsTo")
 }
 
 model EmailVerification {
@@ -94,7 +138,7 @@ model Card {
 model CardProperty {
   id                  String              @id @default(cuid())
   cardId              String
-  type                String
+  type                CardPropertyType
   value               String
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
@@ -104,13 +148,13 @@ model CardProperty {
 }
 
 model PropertyParameter {
-  id         String       @id @default(cuid())
+  id         String                 @id @default(cuid())
   propertyId String
-  key        String
+  key        PropertyParameterType
   value      String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  property   CardProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  property   CardProperty           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 }
 
 model ShareRule {
